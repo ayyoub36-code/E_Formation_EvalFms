@@ -26,7 +26,6 @@ public class UserAuth {
 	public static boolean isAdmin(Dao<UserRole> daoUserRole, int idUser) {
 		if (((UserRoleDao) daoUserRole).read(idUser).getIdRole() == 2)
 			return true;
-
 		return false;
 	}
 }
