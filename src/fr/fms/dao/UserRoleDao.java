@@ -1,6 +1,7 @@
 package fr.fms.dao;
 
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
@@ -24,8 +25,18 @@ public class UserRoleDao implements Dao<UserRole> {
 
 	@Override
 	public UserRole read(int id) {
-		// TODO Auto-generated method stub
-		return null;
+		UserRole role = null;
+		String sql = "Select * from T_UserRoles where idUser =? ;";
+		try (PreparedStatement ps = connection.prepareStatement(sql)) {
+			ps.setInt(1, id);
+			ResultSet rs = ps.executeQuery();
+			if (rs.next()) {
+				role = new UserRole(rs.getInt(1), rs.getInt(2), rs.getInt(3));
+			}
+		} catch (SQLException e) {
+			logger.severe("pb sql sur la lecture d'un User Role " + e.getMessage());
+		}
+		return role;
 	}
 
 	@Override

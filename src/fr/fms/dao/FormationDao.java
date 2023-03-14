@@ -33,7 +33,7 @@ public class FormationDao implements Dao<Formation> {
 		Formation formation = null;
 		String sql = "Select * from T_formations where idFormation =? ;";
 		try (PreparedStatement ps = connection.prepareStatement(sql)) {
-			ps.setLong(1, id);
+			ps.setInt(1, id);
 			ResultSet rs = ps.executeQuery();
 			if (rs.next()) {
 				formation = new Formation(rs.getInt(1), rs.getString(2), rs.getString(3), rs.getInt(4),

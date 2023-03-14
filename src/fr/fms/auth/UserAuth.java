@@ -4,7 +4,9 @@ import java.util.Scanner;
 
 import fr.fms.dao.Dao;
 import fr.fms.dao.UserDao;
+import fr.fms.dao.UserRoleDao;
 import fr.fms.entities.User;
+import fr.fms.entities.UserRole;
 
 public class UserAuth {
 
@@ -21,4 +23,10 @@ public class UserAuth {
 		return false;
 	}
 
+	public static boolean isAdmin(Dao<UserRole> daoUserRole, int idUser) {
+		if (((UserRoleDao) daoUserRole).read(idUser).getIdRole() == 2)
+			return true;
+
+		return false;
+	}
 }
