@@ -4,7 +4,7 @@ public class UserRole {
 
 	private int id;
 	private int idUser;
-	private int idRole;
+	private int idRole = 1; // role user
 
 	public UserRole(int id, int idUser, int idRole) {
 		this.id = id;
