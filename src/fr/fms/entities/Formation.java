@@ -9,6 +9,8 @@ public class Formation {
 	private double price;
 	private int idCategory;
 
+	public static final int MAX_STRING_LENGTH = 20;
+
 	public Formation(int id, String name, String description, int duration, boolean isFaceToFace, double price,
 			int idCategory) {
 		this.id = id;
@@ -82,10 +84,21 @@ public class Formation {
 		return id;
 	}
 
+	public static String centerString(String str) {
+		if (str.length() >= MAX_STRING_LENGTH)
+			return str;
+		String dest = "                    ";
+		int deb = (MAX_STRING_LENGTH - str.length()) / 2;
+		String data = new StringBuilder(dest).replace(deb, deb + str.length(), str).toString();
+		return data;
+	}
+
 	@Override
 	public String toString() {
-		return "Formation [id=" + id + ", name=" + name + ", description=" + description + ", duration=" + duration
-				+ ", isFaceToFace=" + isFaceToFace + ", price=" + price + ", idCategory=" + idCategory + "]";
+		return centerString(String.valueOf(id)) + centerString(name) + centerString(String.valueOf(duration))
+				+ centerString(String.valueOf(price + "€"));
+//		 "Formation [id=" + id + ", name=" + name + ", description=" + description + ", duration=" + duration
+//				+ ", isFaceToFace=" + isFaceToFace + ", price=" + price + ", idCategory=" + idCategory + "]";
 	}
 
 }

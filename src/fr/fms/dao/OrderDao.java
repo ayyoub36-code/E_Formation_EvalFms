@@ -20,7 +20,7 @@ public class OrderDao implements Dao<Order> {
 		try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
 			ps.setDate(1, obj.getDate());
 			ps.setLong(2, obj.getIdCustomer());
-			ps.setDouble(2, obj.getTotalAmount());
+			ps.setDouble(3, obj.getTotalAmount());
 			if (ps.executeUpdate() == 1) {
 				ResultSet rs = ps.getGeneratedKeys();
 				if (rs.next())

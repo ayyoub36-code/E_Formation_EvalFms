@@ -9,6 +9,7 @@ import java.util.List;
 
 import fr.fms.entities.Customer;
 import fr.fms.entities.User;
+import fr.fms.entities.UserRole;
 
 public class UserDao implements Dao<User> {
 
@@ -100,6 +101,30 @@ public class UserDao implements Dao<User> {
 			logger.severe("pb sql sur l'affichage des utilisateurs " + e.getMessage());
 		}
 		return users;
+	}
+
+	/**
+	 * @param prends en param un user
+	 * @return un id de l utilisateur a ajouter
+	 */
+	public int createAndReturnId(User obj) {
+		int id = 0;
+		String sql = "INSERT INTO T_Users (Login,Password) VALUES (?,?);";
+		try (PreparedStatement ps = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS)) {
+			ps.setString(1, obj.getLogin());
+			ps.setString(2, obj.getPassword());
+			if (ps.executeUpdate() == 1) {
+				ResultSet rs = ps.getGeneratedKeys();
+				if (rs.next()) {
+					id = rs.getInt(1);
+					new UserRoleDao().create(new UserRole(id, 1));
+				}
+
+			}
+		} catch (SQLException e) {
+			logger.severe("pb sql sur la création d'un utilisateur " + e.getMessage());
+		}
+		return id;
 	}
 
 	/**

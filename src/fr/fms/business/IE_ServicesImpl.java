@@ -70,7 +70,7 @@ public class IE_ServicesImpl implements IE_Services {
 			System.out.println("Voici le contenu de votre panier : \n");
 			display(cart);
 		} else
-			System.out.println("Ajouter des produits dans votre panier !");
+			System.out.println("Ajouter des formations dans votre panier !");
 	}
 
 	/**
@@ -141,6 +141,7 @@ public class IE_ServicesImpl implements IE_Services {
 			OrderItem oi = new OrderItem(formation.getId(), idOrder);
 			daoOrderItem.create(oi);
 		}
+		cart.clear(); // vider le panier
 	}
 
 	@Override
