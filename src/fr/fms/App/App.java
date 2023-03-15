@@ -15,10 +15,13 @@ import fr.fms.entities.Formation;
 import fr.fms.entities.User;
 import fr.fms.entities.UserRole;
 
+/**
+ * @author Mehdioui_Ayyoub
+ * @version 1.0
+ * @since 15/03/2023
+ *
+ */
 public class App {
-
-	// TODO gérer le menu admin
-
 	public static Dao<User> daoUser = DAOFactory.getUserDao();
 	private static Customer customer;
 	private static User user = (((UserDao) daoUser).getUser());
@@ -125,6 +128,11 @@ public class App {
 		}
 	}
 
+	/**
+	 * supprimer une formation Admin
+	 * 
+	 * @param scan
+	 */
 	private static void deleteFormation(Scanner scan) {
 		System.out.println("Saisissez l'id de la formation que vous souhaiter supprimer :");
 		int idF = scan.nextInt();
@@ -132,6 +140,11 @@ public class App {
 		System.out.println("La formation à bien été supprimé !");
 	}
 
+	/**
+	 * mis à jour d'une formation Admin
+	 * 
+	 * @param scan
+	 */
 	private static void updateFormation(Scanner scan) {
 		String response = "";
 		Formation formation = null;
@@ -188,6 +201,12 @@ public class App {
 			System.out.println("La mise à jour est faite ");
 	}
 
+	/**
+	 * ajouter au panier une formation
+	 * 
+	 * @param scan
+	 * @param services
+	 */
 	private static void addFormation(Scanner scan, IE_ServicesImpl services) {
 		// ajouter une formation
 		boolean faceToFace = false;
@@ -212,6 +231,12 @@ public class App {
 			System.out.println("La formation à bien été ajouter");
 	}
 
+	/**
+	 * payer la commande à partir de voir panier menu
+	 * 
+	 * @param scan
+	 * @param services
+	 */
 	private static void payFromCart(Scanner scan, IE_ServicesImpl services) {
 		int idCustomer;
 		if (!services.getCart().isEmpty()) {
@@ -238,6 +263,12 @@ public class App {
 		}
 	}
 
+	/**
+	 * connection et deconnection
+	 * 
+	 * @param scan
+	 * @return
+	 */
 	private static boolean deconnection(Scanner scan) {
 		if (user == null) {
 			while (UserAuth.isConnected(scan, daoUser) == false) // verif connection
@@ -256,6 +287,11 @@ public class App {
 		return false;
 	}
 
+	/**
+	 * ajoute un nouveau user
+	 * 
+	 * @return id de l'utilisateur créer
+	 */
 	private static int newUser() {
 		System.out.println("saisissez un login :");
 		String login = scan.next();
@@ -265,6 +301,13 @@ public class App {
 		return ((UserDao) daoUser).createAndReturnId(new User(login, password));
 	}
 
+	/**
+	 * choix client pour passer la commande
+	 * 
+	 * @param scan
+	 * @param services
+	 * @return id du client choisi
+	 */
 	private static int chooseClientAccount(Scanner scan, IE_ServicesImpl services) {
 		int idCustomer = 0;
 		List<Customer> customers = ((UserDao) daoUser).getUserCustomers(user.getId());
@@ -289,6 +332,11 @@ public class App {
 		return idCustomer;
 	}
 
+	/**
+	 * ajouter un nouveau client
+	 * 
+	 * @return id du client ajouter dans DB
+	 */
 	private static int newCustomer() {
 		// int idCustomer = chooseClientAccount(scan, services);
 		int idCustomer = 0;
@@ -319,6 +367,13 @@ public class App {
 		return idCustomer;
 	}
 
+	/**
+	 * payer la commande
+	 * 
+	 * @param scan
+	 * @param services
+	 * @param idCustomer
+	 */
 	private static void pay(Scanner scan, IE_ServicesImpl services, int idCustomer) {
 		if (idCustomer == 0) {
 			System.out.println("veuillez choisir un compte client !");
@@ -335,6 +390,13 @@ public class App {
 		}
 	}
 
+	/**
+	 * ajouter au panier
+	 * 
+	 * @param scan
+	 * @param services
+	 * @return id Formation
+	 */
 	private static int addToCart(Scanner scan, IE_ServicesImpl services) {
 		int idFormation;
 		System.out.println("Veuillez saisir l'id de la formation que vous voulez ajouter :");
@@ -345,6 +407,12 @@ public class App {
 		return idFormation;
 	}
 
+	/**
+	 * AFFICHAGE PAR CATEGORIE des formations
+	 * 
+	 * @param scan
+	 * @param services
+	 */
 	private static void displayFormationByCat(Scanner scan, IE_ServicesImpl services) {
 		System.out.println("Veuillez saisir l'id de la catégorie :");
 		int idCategory = scan.nextInt();
@@ -365,6 +433,12 @@ public class App {
 		}
 	}
 
+	/**
+	 * AFFICHAGE PAR MOT CLE des formations
+	 * 
+	 * @param scan
+	 * @param services
+	 */
 	private static void displayFormationByKeyWord(Scanner scan, IE_ServicesImpl services) {
 		System.out.println("Saisissez le nom de la formation :");
 		String search = scan.next();
@@ -377,6 +451,12 @@ public class App {
 				a.getName(), a.getDescription(), a.getPrice() + "€"));
 	}
 
+	/**
+	 * afficher les commandes d'un client
+	 * 
+	 * @param scan
+	 * @param services
+	 */
 	private static void displayOrdersById(Scanner scan, IE_ServicesImpl services) {
 		System.out.println("Saisissez l'id du client :");
 		int idCust = scan.nextInt();
@@ -389,6 +469,12 @@ public class App {
 				a.getId(), a.getDate(), a.getIdCustomer(), a.getTotalAmount() + "€"));
 	}
 
+	/**
+	 * afficher les formations par mode présentiel
+	 * 
+	 * @param scan
+	 * @param services
+	 */
 	private static void displayFormationByFaceToFace(Scanner scan, IE_ServicesImpl services) {
 
 		System.out.printf("                      AFFICHAGE FORMATIONS EN PRETENTIEL   %n");
@@ -406,6 +492,13 @@ public class App {
 
 	}
 
+	/**
+	 * afficher les détails d'une formation
+	 * 
+	 * @param scan
+	 * @param services
+	 * @param idFormation
+	 */
 	private static void displayFormation(Scanner scan, IE_ServicesImpl services, int idFormation) {
 		System.out.println("Veuillez saisir l'id de la formation qui vous interesse :");
 		idFormation = scan.nextInt();
@@ -419,12 +512,18 @@ public class App {
 			System.out.println("cet id n'existe pas ! ");
 	}
 
+	/**
+	 * afficher toutes les formations
+	 */
 	public static void displayFormations() {
 		System.out.println(Formation.centerString(COLUMN_ID) + Formation.centerString(COLUMN_NAME)
 				+ Formation.centerString(COLUMN_DURATION) + Formation.centerString(COLUMN_PRICE));
 		services.readAll().forEach(System.out::println);
 	}
 
+	/**
+	 * afficher un menu dynamique selon le type (visiteur/connecté/admin)
+	 */
 	private static void menuWelcom() {
 		// adapter le menu a l utilisateur qui est connecté
 		if (user != null && UserAuth.isAdmin(daoUserRole, user.getId())) {
@@ -440,6 +539,9 @@ public class App {
 		}
 	}
 
+	/**
+	 * menu visiteur
+	 */
 	private static void menuGuest() {
 		int nb_elem = services.getCart().size();
 		String name = (user == null) ? "Guest" : user.getLogin();
@@ -453,6 +555,12 @@ public class App {
 				+ "\n 9 : Voir le panier" + "\n 10: Se connecter / Se déconnecter" + ANSI_RESET);
 	}
 
+	/**
+	 * valider un email
+	 * 
+	 * @param email
+	 * @return
+	 */
 	public static boolean isValidEmail(String email) {
 		String regExp = "^[A-Za-z0-9._-]+@[A-Za-z0-9._-]+\\.[a-z][a-z]+$";
 		return email.matches(regExp);
