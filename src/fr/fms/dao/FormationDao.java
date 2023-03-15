@@ -55,6 +55,7 @@ public class FormationDao implements Dao<Formation> {
 			ps.setBoolean(4, obj.isFaceToFace());
 			ps.setDouble(5, obj.getPrice());
 			ps.setInt(6, obj.getIdCategory());
+			ps.setInt(7, obj.getId());
 			if (ps.executeUpdate() == 1)
 				return true;
 		} catch (SQLException e) {

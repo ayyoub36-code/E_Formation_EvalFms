@@ -18,12 +18,12 @@ import fr.fms.entities.UserRole;
 public class App {
 
 	// TODO gérer le menu admin
-	// TODO ajout user(name) panier(size)
 
 	public static Dao<User> daoUser = DAOFactory.getUserDao();
 	private static Customer customer;
 	private static User user = (((UserDao) daoUser).getUser());
 	public static Dao<Customer> daoCustomer = DAOFactory.getCustomerDao();
+	public static Dao<Formation> daoFormation = DAOFactory.getFormationDao();
 	public static Dao<UserRole> daoUserRole = DAOFactory.getUserRoleDao();
 	public static IE_ServicesImpl services = new IE_ServicesImpl();
 
@@ -37,6 +37,9 @@ public class App {
 	private static final String COLUMN_FACETOFACE = "PRESENTIEL";
 	private static final String COLUMN_PRICE = "PRIX";
 	private static final String COLUMN_NAME = "FORMATION";
+	private static final Object COLUMN_DATE = "DATE";
+	private static final Object COLUMN_IDCUSTOMER = "ID CLIENT";
+	private static final Object COLUMN_AMMOUNT = "TOTAL";
 	public static Scanner scan = new Scanner(System.in);
 
 	public static void main(String[] args) {
@@ -52,7 +55,7 @@ public class App {
 		int idFormation = 0;
 		int input = 0;
 
-		while (input != 15) {
+		while (input != 16) {
 			menuWelcom(); // afficher le menu pricipal
 			input = scan.nextInt();
 			switch (input) {
@@ -101,18 +104,112 @@ public class App {
 				}
 				break;
 			case 12: // admin add formation
+				addFormation(scan, services);
 				break;
 			case 13: // admin update formation
+				updateFormation(scan);
 				break;
 			case 14: // admin delete formation
+				deleteFormation(scan);
 				break;
 			case 15: // admin afficher les commandes d'un client
+				displayOrdersById(scan, services);
+				break;
+			case 16: // admin afficher les commandes d'un client
+				System.exit(0);
 				break;
 			default:
 				System.out.println("Saisissez une valeur valide !");
 				break;
 			}
 		}
+	}
+
+	private static void deleteFormation(Scanner scan) {
+		System.out.println("Saisissez l'id de la formation que vous souhaiter supprimer :");
+		int idF = scan.nextInt();
+		daoFormation.delete(daoFormation.read(idF));
+		System.out.println("La formation à bien été supprimé !");
+	}
+
+	private static void updateFormation(Scanner scan) {
+		String response = "";
+		Formation formation = null;
+		System.out.println("Saisissez l'id de la fomation que vous souhaiter mettre à jour :");
+		int id = scan.nextInt();
+		formation = daoFormation.read(id);
+		System.out.println(formation);
+		System.out.println("changer le nom ? O/N");
+		response = scan.next();
+		if (response.equalsIgnoreCase("o")) {
+			System.out.println("Taper le nouveau nom :");
+			String name = scan.next();
+			formation.setName(name);
+		}
+		System.out.println("changer la description ? O/N");
+		response = scan.next();
+		if (response.equalsIgnoreCase("o")) {
+			System.out.println("Taper la nouvelle description :");
+			String description = scan.nextLine();
+			formation.setDescription(description);
+		}
+		System.out.println("changer le durée ? O/N");
+		response = scan.next();
+		if (response.equalsIgnoreCase("o")) {
+			System.out.println("Taper la nouvelle durée :");
+			int duration = scan.nextInt();
+			formation.setDuration(duration);
+		}
+		System.out.println("changer le mode (présentiel/distanciel) ? O/N");
+		response = scan.next();
+		if (response.equalsIgnoreCase("o")) {
+			System.out.println("Taper oui pour présentiel :");
+			String faceTo = scan.next();
+			if (faceTo.equalsIgnoreCase("oui"))
+				formation.setFaceToFace(true);
+			else
+				formation.setFaceToFace(false);
+		}
+		System.out.println("changer le prix ? O/N");
+		response = scan.next();
+		if (response.equalsIgnoreCase("o")) {
+			System.out.println("Taper le nouveau prix :");
+			double price = scan.nextDouble();
+			formation.setPrice(price);
+		}
+		System.out.println("changer l'id de la Catégorie ? O/N");
+		response = scan.next();
+		if (response.equalsIgnoreCase("o")) {
+			int idCat = scan.nextInt();
+			formation.setIdCategory(idCat);
+		}
+
+		if (daoFormation.update(formation))
+			System.out.println("La mise à jour est faite ");
+	}
+
+	private static void addFormation(Scanner scan, IE_ServicesImpl services) {
+		// ajouter une formation
+		boolean faceToFace = false;
+		scan.nextLine();
+		System.out.println("saisissez le nom de la formation :");
+		String fname = scan.nextLine();
+		System.out.println("saisissez une description :");
+		String description = scan.nextLine();
+		System.out.println("saisissez la durée en jours :");
+		int duration = scan.nextInt();
+		System.out.println("Est ce en présentiel ? Oui/Non");
+		String response = scan.next();
+		if (response.equalsIgnoreCase("oui")) {
+			faceToFace = true;
+		}
+		System.out.println("Saisissez le prix :");
+		double price = scan.nextDouble();
+		System.out.println("saisissez l'id de la catégorie :");
+		services.readAllCategory().forEach(e -> System.out.println(e));
+		int idCat = scan.nextInt();
+		if (daoFormation.create(new Formation(fname, description, duration, faceToFace, price, idCat)))
+			System.out.println("La formation à bien été ajouter");
 	}
 
 	private static void payFromCart(Scanner scan, IE_ServicesImpl services) {
@@ -153,6 +250,7 @@ public class App {
 			if (response.equalsIgnoreCase("Oui")) {
 				System.out.println("A bientôt ");
 				user = null;
+				services.getCart().clear();
 			}
 		}
 		return false;
@@ -279,6 +377,18 @@ public class App {
 				a.getName(), a.getDescription(), a.getPrice() + "€"));
 	}
 
+	private static void displayOrdersById(Scanner scan, IE_ServicesImpl services) {
+		System.out.println("Saisissez l'id du client :");
+		int idCust = scan.nextInt();
+		System.out.printf("                AFFICHAGE DES COMMANDES   %n");
+		System.out.printf("-------------------------------------------------------------------------------%n");
+		System.out.printf("%-10s | %-15s | %-35s | %-15s %n", COLUMN_ID, COLUMN_DATE, COLUMN_IDCUSTOMER,
+				COLUMN_AMMOUNT);
+		System.out.printf("-------------------------------------------------------------------------------%n");
+		services.readAllCustomerOrders(idCust).forEach(a -> System.out.printf("%-10s | %-15s | %-35s | %-15s%n",
+				a.getId(), a.getDate(), a.getIdCustomer(), a.getTotalAmount() + "€"));
+	}
+
 	private static void displayFormationByFaceToFace(Scanner scan, IE_ServicesImpl services) {
 
 		System.out.printf("                      AFFICHAGE FORMATIONS EN PRETENTIEL   %n");
@@ -302,9 +412,9 @@ public class App {
 		if (services.read(idFormation) != null) {
 			if (services.read(idFormation).getIdCategory() != 0) {
 				Category category = services.readCategory(services.read(idFormation).getIdCategory());
-				System.out.println(services.read(idFormation) + ", Catégorie : " + category.getName());
+				System.out.println(services.read(idFormation) + "Catégorie : " + category.getName());
 			} else
-				System.out.println(services.read(idFormation) + ", Catégorie : pas de catégorie ! ");
+				System.out.println(services.read(idFormation) + "Catégorie : pas de catégorie ! ");
 		} else
 			System.out.println("cet id n'existe pas ! ");
 	}
@@ -317,32 +427,25 @@ public class App {
 
 	private static void menuWelcom() {
 		// adapter le menu a l utilisateur qui est connecté
-		if (((UserDao) daoUser).getUser() != null
-				&& UserAuth.isAdmin(daoUserRole, ((UserDao) daoUser).getUser().getId())) {
-//			System.out.println(ANSI_CYAN + "\n1/ Liste des formations" + "\n2/ Afficher les détails d'une formation"
-//					+ "\n3/ Afficher la liste des catégories" + "\n4/ Afficher les formations par categorie"
-//					+ "\n5/ Ajouter une formation au panier" + "\n6/ Enlever une formation du panier"
-//					+ "\n7/ Voir le panier" + "\n8/ choisir un compte client" + "\n9/ Se déconnecter"
-//					+ "\n10/ Passer la commande\n" + ANSI_RESET + 
+		if (user != null && UserAuth.isAdmin(daoUserRole, user.getId())) {
 			menuGuest();
-			System.out.println("\n11/ Passer la commande\n" + ANSI_GREEN + "\nMenu Admin \n"
-					+ "A/ Ajouter une formation\n" + "B/ supprimer une formation\n" + "C/ mettre à jour une formation\n"
-					+ "D/ afficher les commandes d'un client\n" + ANSI_RESET);
-
-		} else if (((UserDao) daoUser).getUser() != null) {
-
-			// + "\n1/ Liste des formations" + "\n2/ Afficher les détails d'une formation"
-//					+ "\n3/ Afficher la liste des catégories" + "\n4/ Afficher les formations par categorie"
-//					+ "\n5/ Ajouter une formation au panier" + "\n6/ Enlever une formation du panier"
-//					+ "\n7/ Voir le panier" + "\n8/ choisir un compte client" + "\n9/ Se déconnecter"
+			System.out.println(ANSI_CYAN + " 11: Passer la commande\n" + ANSI_GREEN + "\n   Menu Admin \n"
+					+ " 12 : Ajouter une formation\n" + " 13 : mettre à jour une formation \n"
+					+ " 14 : supprimer une formation\n" + " 15 : afficher les commandes d'un client\n" + ANSI_RESET);
+		} else if (user != null) {
 			menuGuest();
-			System.out.println(ANSI_CYAN + "\n 11 : Passer la commande\n" + ANSI_RESET);
+			System.out.println(ANSI_CYAN + " 11: Passer la commande\n" + ANSI_RESET);
 		} else {
 			menuGuest();
 		}
 	}
 
 	private static void menuGuest() {
+		int nb_elem = services.getCart().size();
+		String name = (user == null) ? "Guest" : user.getLogin();
+		System.out.printf("------------------------------------%n");
+		System.out.printf("     %-10s  |  %-10s   %n", name, "Panier(" + nb_elem + ")");
+		System.out.printf("------------------------------------%n");
 		System.out.println(ANSI_CYAN + "\n 1 : Liste des formations" + "\n 2 : Afficher les détails d'une formation"
 				+ "\n 3 : Afficher la liste des catégories" + "\n 4 : Afficher les formations par categorie"
 				+ "\n 5 : Effectuer une recherche :" + "\n 6 : Afficher les formations en présentiel"
